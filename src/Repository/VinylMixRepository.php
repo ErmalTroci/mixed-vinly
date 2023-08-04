@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\VinylMix;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -39,20 +40,28 @@ class VinylMixRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return VinylMix[] Returns an array of VinylMix objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('v')
-//            ->andWhere('v.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('v.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+   /**
+    * @param string|null $genre
+    * @return QueryBuilder
+    */
+   public function createOrderdByVotesQueryBuilder(string $genre = null): QueryBuilder
+   {
+       $qb = $this->addOrderbyVotesQueryBuilder();
+
+       if ($genre) {
+           $qb->andWhere('mix.genre = :genre')
+            ->setParameter('genre', $genre);
+       }
+
+
+       return $qb;
+   }
+
+   private function addOrderbyVotesQueryBuilder(QueryBuilder $qb = null): QueryBuilder
+   {
+       $qb = $qb ?? $this->createQueryBuilder('mix');
+       return $qb->orderBy('mix.votes', 'DESC');
+   }
 
 //    public function findOneBySomeField($value): ?VinylMix
 //    {
